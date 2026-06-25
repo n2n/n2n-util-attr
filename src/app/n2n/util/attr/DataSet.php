@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\util\type\attrs;
+namespace n2n\util\attr;
 
 use n2n\util\type\TypeConstraint;
 use n2n\util\type\ValueIncompatibleWithConstraintsException;
@@ -399,7 +399,7 @@ class DataSet implements AttributeReader, AttributeWriter {
 	/**
 	 * @param string $name
 	 * @param bool $nullAllowed
-	 * @return \n2n\util\type\attrs\DataSet|null
+	 * @return \n2n\util\attr\DataSet|null
 	 */
 	public function reqDataSet(string $name, bool $nullAllowed = false) {
 		return new DataSet($this->reqArray($name, null, $nullAllowed));
@@ -409,7 +409,7 @@ class DataSet implements AttributeReader, AttributeWriter {
 	 * @param string $name
 	 * @param mixed $defaultValue
 	 * @param bool $nullAllowed
-	 * @return \n2n\util\type\attrs\DataSet|null
+	 * @return \n2n\util\attr\DataSet|null
 	 */
 	public function optDataSet(string $name, $defaultValue = null, bool $nullAllowed = true) {
 		if (null !== ($array = $this->optArray($name, null, $defaultValue, $nullAllowed))) {
@@ -422,7 +422,7 @@ class DataSet implements AttributeReader, AttributeWriter {
 	/**
 	 * @param string $name
 	 * @param bool $nullAllowed
-	 * @return \n2n\util\type\attrs\DataSet[]|null
+	 * @return \n2n\util\attr\DataSet[]|null
 	 */
 	public function reqDataSets(string $name, bool $nullAllowed = false) {
 		$dataSetDatas = $this->reqArray($name, TypeName::ARRAY, $nullAllowed);

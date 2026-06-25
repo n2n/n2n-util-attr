@@ -1,9 +1,9 @@
 <?php
-namespace n2n\util\type\attrs;
+namespace n2n\util\attr;
 
 use PHPUnit\Framework\TestCase;
-use n2n\util\type\mock\StringBackedEnumMock;
-use n2n\util\type\mock\PureEnumMock;
+use n2n\util\attr\mock\StringBackedEnumMock;
+use n2n\util\attr\mock\PureEnumMock;
 use n2n\util\StringUtils;
 
 class DataSetTest extends TestCase {

@@ -10,11 +10,15 @@
 	"homepage" : "http://n2n.rocks/",
 	"license" : "LGPL-3.0-or-later",
 	"authors" : [
-        {
-			"name" : "Andreas von Burg",
-			"email" : "a@von-burg.net",
-			"homepage" : "https://www.von-burg.net/"
-		}
+      {
+        "name" : "Andreas von Burg",
+        "email" : "a@von-burg.net",
+        "homepage" : "https://www.von-burg.net/"
+      },
+      {
+        "name" : "David Meier",
+        "email" : "meier@hnm.ch"
+      }
 	],
 	"minimum-stability" : "dev",
 	"prefer-stable": true,
@@ -23,19 +27,19 @@
 	},
 	"require" : {
       "n2n/n2n-util": "~7.5.0",
-      "n2n/n2n-spec-valobj": "~7.5.0"
+      "n2n/n2n-spec-valobj": "~1.0.0"
     },
 	"require-dev" : {
 		"phpunit/phpunit" : "^9.6.26"
 	},
 	"autoload" : {
 		"psr-4" : {
-			"n2n\\validation\\" : "src/app/n2n/util/type/attrs"
+			"n2n\\util\\attr\\" : "src/app/n2n/util/attr"
 		}
 	},
 	"autoload-dev" : {
 		"psr-4" : {
-			"n2n\\validation\\" : "src/test/n2n/util/type/attrs"
+			"n2n\\util\\attr\\" : "src/test/n2n/util/attr"
 		}
 	}
 }

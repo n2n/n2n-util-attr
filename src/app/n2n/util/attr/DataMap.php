@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\util\type\attrs;
+namespace n2n\util\attr;
 
 use n2n\util\type\TypeConstraint;
 use n2n\util\type\ValueIncompatibleWithConstraintsException;
@@ -108,7 +108,7 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\util\type\attrs\AttributeReader::containsAttribute()
+	 * @see \n2n\util\attr\AttributeReader::containsAttribute()
 	 */
 	function containsAttribute(AttributePath $path): bool {
 		return $this->has($path);
@@ -116,7 +116,7 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	
 	/**
 	 * {@inheritDoc}
-	 * @see \n2n\util\type\attrs\AttributeReader::readAttribute()
+	 * @see \n2n\util\attr\AttributeReader::readAttribute()
 	 */
 	function readAttribute(AttributePath $path, ?TypeConstraint $typeConstraint = null, bool $mandatory = true, 
 			mixed $defaultValue = null): mixed {
@@ -443,7 +443,7 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	 * @param string|AttributePath|string[] $path
 	 * @param mixed $defaultValue
 	 * @param bool $nullAllowed
-	 * @return \n2n\util\type\attrs\Attributes|null
+	 * @return \n2n\util\attr\Attributes|null
 	 */
 	public function reqDataSet($path, bool $nullAllowed = false) {
 		if (null !== ($array = $this->reqArray($path, null, $nullAllowed))) {
@@ -472,7 +472,7 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	 * @param string|AttributePath|string[] $path
 	 * @param mixed $defaultValue
 	 * @param bool $nullAllowed
-	 * @return \n2n\util\type\attrs\DataMap|null
+	 * @return \n2n\util\attr\DataMap|null
 	 */
 	public function reqDataMap($path, bool $nullAllowed = false) {
 		if (null !== ($array = $this->reqArray($path, null, $nullAllowed))) {
@@ -487,7 +487,7 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	 * @param mixed $path must be compatible with {@link AttributePath::create()}.
 	 * @param mixed $defaultValue
 	 * @param bool $nullAllowed
-	 * @return \n2n\util\type\attrs\DataMap|null
+	 * @return \n2n\util\attr\DataMap|null
 	 */
 	public function optDataMap(mixed $path, $defaultValue = null, bool $nullAllowed = true) {
 		if (null !== ($array = $this->optArray($path, null, $defaultValue, $nullAllowed))) {

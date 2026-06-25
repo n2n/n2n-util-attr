@@ -19,7 +19,7 @@
  * Bert Hofmänner.......: Idea, Frontend UI, Community Leader, Marketing
  * Thomas Günther.......: Developer, Hangar
  */
-namespace n2n\util\type\attrs;
+namespace n2n\util\attr;
 
 use n2n\util\type\TypeUtils;
 use n2n\util\type\ArgUtils;
@@ -104,7 +104,7 @@ class AttributePath {
 	
 	/**
 	 * @param string|string[]|AttributePath $expression
-	 * @return NULL|\n2n\util\type\attrs\AttributePath
+	 * @return NULL|\n2n\util\attr\AttributePath
 	 */
 	public static function build(mixed $expression): ?AttributePath {
 		if ($expression === null) {
@@ -117,7 +117,7 @@ class AttributePath {
 	/**
 	 * @param string|string[]|AttributePath $expression
 	 * @throws \InvalidArgumentException
-	 * @return \n2n\util\type\attrs\AttributePath
+	 * @return \n2n\util\attr\AttributePath
 	 */
 	public static function create(mixed $expression): AttributePath {
 		if ($expression instanceof AttributePath) {
@@ -138,7 +138,7 @@ class AttributePath {
 	
 	/**
 	 * @param array $expressions
-	 * @return \n2n\util\type\attrs\AttributePath[]
+	 * @return \n2n\util\attr\AttributePath[]
 	 */
 	public static function createArray(array $expressions) {
 		$paths = [];
