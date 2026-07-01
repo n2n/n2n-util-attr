@@ -294,9 +294,10 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	/**
 	 * @param string $name
 	 * @param mixed $key scalar
+	 * @deprecated
 	 */
 	public function removeKey(string $name, $key) {
-		if ($this->hasKey($name, $key)) {
+		if ($this->has($name)) {
 			unset($this->data[$name][$key]);
 		}
 	}
