@@ -1,6 +1,6 @@
 <?php
 
-namespace n2n\util\attr;
+namespace n2n\util\attr\trait;
 
 use n2n\util\type\TypeUtils;
 use n2n\util\type\TypeConstraints;
@@ -9,6 +9,8 @@ use n2n\spec\valobj\scalar\StringValueObject;
 use n2n\spec\valobj\scalar\IntValueObject;
 use n2n\spec\valobj\scalar\FloatValueObject;
 use n2n\spec\valobj\scalar\BoolValueObject;
+use n2n\util\attr\MissingAttributeFieldException;
+use n2n\util\attr\InvalidAttributeException;
 
 /**
  */

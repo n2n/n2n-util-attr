@@ -25,9 +25,9 @@ use n2n\util\type\TypeConstraint;
 use n2n\util\type\ValueIncompatibleWithConstraintsException;
 use n2n\util\StringUtils;
 use n2n\util\type\TypeName;
-use n2n\util\type\TypeConstraints;
-use Stringable;
-use n2n\util\ex\IllegalStateException;
+use n2n\util\attr\trait\RetrieveTrait;
+use n2n\util\attr\trait\BasicReqAndOptTrait;
+use n2n\util\attr\trait\ValueObjReqAndOptTrait;
 
 class DataSet implements AttributeReader, AttributeWriter {
 	use RetrieveTrait;
@@ -40,31 +40,6 @@ class DataSet implements AttributeReader, AttributeWriter {
 		$this->attrs = (array) $attrs;
 	}
 
-	/**
-	 * @param string $name
-	 * @param TypeConstraint|null $type
-	 * @return mixed
-	 * @throws MissingAttributeFieldException
-	 * @throws InvalidAttributeException
-	 * all Type based req functions are served by {@link BasicReqAndOptTrait}
-	 * all ValueObjectType based req functions are served by {@link ValueObjReqAndOptTrait}
-	 */
-	public function req(string $name, ?TypeConstraint $type = null) {
-		return $this->retrieve($name, $type, true);
-	}
-
-	/**
-	 * @throws InvalidAttributeException
-	 * all Type based opt functions are served by {@link BasicReqAndOptTrait}
-	 * all ValueObjectType based opt functions are served by {@link ValueObjReqAndOptTrait}
-	 */
-	public function opt(string $name, ?TypeConstraint $type = null, $defaultValue = null) {
-		try {
-			return $this->retrieve($name, $type, false, $defaultValue);
-		} catch (MissingAttributeFieldException $e) {
-			throw new IllegalStateException('opt() must ignore missing attributes.', previous: $e);
-		}
-	}
 	public function isEmpty(): bool {
 		return empty($this->attrs);
 	}
@@ -121,7 +96,7 @@ class DataSet implements AttributeReader, AttributeWriter {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	private function retrieve(?string $name, $type, $mandatory, $defaultValue = null, &$found = null) {
+	private function retrieve($name, $type, $mandatory, $defaultValue = null, &$found = null): mixed {
 		$typeConstraint = TypeConstraint::build($type);
 
 		if ($name !== null && !$this->contains($name)) {
@@ -204,40 +179,6 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return $this->optString($name, $defaultValue, $nullAllowed);
 	}
 
-	/**
-	 * @return array|mixed|string|null
-	 * @throws InvalidAttributeException
-	 * @throws MissingAttributeFieldException
-	 */
-	public function reqString(string $name, bool $nullAllowed = false, bool $lenient = true) {
-
-		if (!$lenient) {
-			return $this->req($name, TypeConstraint::createSimple('string', $nullAllowed));
-		}
-
-		$typeNames = ['scalar', Stringable::class, \BackedEnum::class];
-		if ($nullAllowed) {
-			$typeNames[] = 'null';
-		}
-
-		return StringUtils::strOrNullOf($this->req($name, TypeConstraints::type($typeNames)));
-	}
-
-	/**
-	 * @throws InvalidAttributeException
-	 */
-	public function optString(string $name, $defaultValue = null, $nullAllowed = true, bool $lenient = true) {
-		if (!$lenient) {
-			return $this->opt($name, TypeConstraint::createSimple('string', $nullAllowed), $defaultValue);
-		}
-
-		$typeNames = ['scalar', Stringable::class, \BackedEnum::class];
-		if ($nullAllowed) {
-			$typeNames[] = 'null';
-		}
-
-		return StringUtils::strOrNullOf($this->opt($name, TypeConstraints::type($typeNames)));
-	}
 
 	/**
 	 * @param string $name
@@ -277,20 +218,6 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return $this->optArray($name, $fieldType, $defaultValue, $nullAllowed);
 	}
 
-	/**
-	 * @throws InvalidAttributeException
-	 * @throws MissingAttributeFieldException
-	 */
-	public function reqArray(string $name, $fieldType = null, bool $nullAllowed = false) {
-		return $this->req($name, TypeConstraint::createArrayLike('array', $nullAllowed, $fieldType));
-	}
-
-	/**
-	 * @throws InvalidAttributeException
-	 */
-	public function optArray(string $name, $fieldType = null, $defaultValue = [], bool $nullAllowed = false) {
-		return $this->opt($name, TypeConstraint::createArrayLike('array', $nullAllowed, $fieldType), $defaultValue);
-	}
 
 	/**
 	 * @param string $name

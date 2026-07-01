@@ -27,7 +27,9 @@ use n2n\util\StringUtils;
 use n2n\util\type\TypeUtils;
 use n2n\util\type\TypeConstraints;
 use n2n\util\ex\NotYetImplementedException;
-use n2n\util\ex\IllegalStateException;
+use n2n\util\attr\trait\RetrieveTrait;
+use n2n\util\attr\trait\BasicReqAndOptTrait;
+use n2n\util\attr\trait\ValueObjReqAndOptTrait;
 
 class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	use RetrieveTrait;
@@ -43,33 +45,6 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 		$this->data = (array) $data;
 	}
 
-	/**
-	 * @param mixed $path
-	 * @param TypeConstraint|null $type
-	 * @throws MissingAttributeFieldException
-	 * @throws InvalidAttributeException
-	 * all Type based req functions are served by {@link BasicReqAndOptTrait}
-	 * all ValueObjectType based req functions are served by {@link ValueObjReqAndOptTrait}
-	 */
-	public function req($path, ?TypeConstraint $type = null) {
-		return $this->retrieve($path, $type, true);
-	}
-
-	/**
-	 * @param mixed $path
-	 * @param TypeConstraint|null $type
-	 * @param mixed $defaultValue
-	 * @throws InvalidAttributeException
-	 * all Type based opt functions are served by {@link BasicReqAndOptTrait}
-	 * all ValueObjectType based opt functions are served by {@link ValueObjReqAndOptTrait}
-	 */
-	public function opt($path, ?TypeConstraint $type = null, $defaultValue = null) {
-		try {
-			return $this->retrieve($path, $type, false, $defaultValue);
-		} catch (MissingAttributeFieldException $e) {
-			throw new IllegalStateException('opt() must ignore missing attributes.', previous: $e);
-		}
-	}
 
 	/**
 	 *
@@ -115,7 +90,7 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	private function retrieve($path, $type, $mandatory, $defaultValue = null, &$found = null) {
+	private function retrieve($path, $type, $mandatory, $defaultValue = null, &$found = null): mixed {
 		$attributePath = AttributePath::create($path);
 		$typeConstraint = TypeConstraint::build($type);
 		

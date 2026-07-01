@@ -1,9 +1,14 @@
 <?php
 
-namespace n2n\util\attr;
+namespace n2n\util\attr\trait;
 
 use n2n\util\type\TypeConstraint;
 use n2n\util\EnumUtils;
+use n2n\util\StringUtils;
+use n2n\util\type\TypeConstraints;
+use Stringable;
+use n2n\util\attr\MissingAttributeFieldException;
+use n2n\util\attr\InvalidAttributeException;
 
 /**
  */
@@ -34,11 +39,12 @@ trait BasicReqAndOptTrait {
 			return $this->req($path, TypeConstraint::createSimple('string', $nullAllowed));
 		}
 
-		if (null !== ($value = $this->reqScalar($path, $nullAllowed))) {
-			return (string) $value;
+		$typeNames = ['scalar', Stringable::class, \BackedEnum::class];
+		if ($nullAllowed) {
+			$typeNames[] = 'null';
 		}
 
-		return null;
+		return StringUtils::strOrNullOf($this->req($path, TypeConstraints::type($typeNames)));
 	}
 
 	/**
@@ -49,11 +55,13 @@ trait BasicReqAndOptTrait {
 			return $this->opt($path, TypeConstraint::createSimple('string', $nullAllowed), $defaultValue);
 		}
 
-		if (null !== ($value = $this->optScalar($path, $defaultValue, $nullAllowed))) {
-			return (string) $value;
+		$typeNames = ['scalar', Stringable::class, \BackedEnum::class];
+		if ($nullAllowed) {
+			$typeNames[] = 'null';
 		}
 
-		return null;
+		return StringUtils::strOrNullOf($this->opt($path, TypeConstraints::type($typeNames)));
+
 	}
 
 	/**

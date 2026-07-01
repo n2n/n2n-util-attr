@@ -1,10 +1,13 @@
 <?php
 
-namespace n2n\util\attr;
+namespace n2n\util\attr\trait;
 
 use n2n\util\type\attrs\AttributePath;
 use n2n\util\type\TypeConstraint;
 use n2n\util\ex\IllegalStateException;
+use ReflectionClass;
+use n2n\util\attr\MissingAttributeFieldException;
+use n2n\util\attr\InvalidAttributeException;
 
 trait RetrieveTrait {
 	/**
