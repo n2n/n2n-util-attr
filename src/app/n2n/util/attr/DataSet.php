@@ -29,16 +29,12 @@ use n2n\util\type\TypeConstraints;
 use Stringable;
 use n2n\util\ex\IllegalStateException;
 
-/**
- * @mixin ValueObjReqAndOptTrait
- * @mixin BasicReqAndOptTrait
- */
 class DataSet implements AttributeReader, AttributeWriter {
+	use RetrieveTrait;
 	use BasicReqAndOptTrait;
 	use ValueObjReqAndOptTrait;
-	private $attrs;
-	private $interceptor;
 
+	private $attrs;
 
 	public function __construct(?array $attrs = null) {
 		$this->attrs = (array) $attrs;

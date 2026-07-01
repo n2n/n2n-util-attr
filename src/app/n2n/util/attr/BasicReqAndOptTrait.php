@@ -8,6 +8,8 @@ use n2n\util\EnumUtils;
 /**
  */
 trait BasicReqAndOptTrait {
+	use RetrieveTrait;
+
 	/**
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException

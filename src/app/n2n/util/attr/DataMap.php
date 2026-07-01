@@ -29,11 +29,8 @@ use n2n\util\type\TypeConstraints;
 use n2n\util\ex\NotYetImplementedException;
 use n2n\util\ex\IllegalStateException;
 
-/**
- * @mixin ValueObjReqAndOptTrait
- * @mixin BasicReqAndOptTrait
- */
 class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
+	use RetrieveTrait;
 	use BasicReqAndOptTrait;
 	use ValueObjReqAndOptTrait;
 
