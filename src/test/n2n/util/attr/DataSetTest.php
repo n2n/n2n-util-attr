@@ -5,6 +5,11 @@ use PHPUnit\Framework\TestCase;
 use n2n\util\attr\mock\StringBackedEnumMock;
 use n2n\util\attr\mock\PureEnumMock;
 use n2n\util\StringUtils;
+use n2n\spec\valobj\err\IllegalValueException;
+use n2n\util\attr\mock\StringValueObjectMock;
+use n2n\util\attr\mock\IntValueObjectMock;
+use n2n\util\attr\mock\FloatValueObjectMock;
+use n2n\util\attr\mock\BoolValueObjectMock;
 
 class DataSetTest extends TestCase {
 	
@@ -86,5 +91,465 @@ class DataSetTest extends TestCase {
 		$this->assertSame(StringBackedEnumMock::VALUE1->value, $dataSet->reqString('key1'));
 		$this->assertSame('value-2', $dataSet->reqString('key2'));
 		$this->assertNull($dataSet->reqString('key3', nullAllowed: true));
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqEnum() {
+		$dataSet = new DataSet(['key1' => 'value-1', 'key2' => 'CASE2', 'key3' => StringBackedEnumMock::VALUE1]);
+
+		$this->assertEquals(StringBackedEnumMock::VALUE1,
+				$dataSet->reqEnum('key1', StringBackedEnumMock::cases()));
+
+		$this->assertEquals(PureEnumMock::CASE2,
+				$dataSet->reqEnum('key2', PureEnumMock::cases()));
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqEnum('key3', PureEnumMock::cases());
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqEnumMissingAttributes() {
+		$dataSet = new DataSet(['key1' => 'value-1', 'key2' => 'CASE2']);
+
+		$this->assertEquals(StringBackedEnumMock::VALUE1,
+				$dataSet->reqEnum('key1', StringBackedEnumMock::cases()));
+
+		$this->assertEquals(PureEnumMock::CASE2,
+				$dataSet->reqEnum('key2', PureEnumMock::cases()));
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqEnum('key3', PureEnumMock::cases());
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testOptEnum() {
+		$dataSet = new DataSet(['key1' => 'value-1', 'key2' => 'CASE2']);
+
+		$this->assertEquals(StringBackedEnumMock::VALUE1,
+				$dataSet->optEnum('key1', StringBackedEnumMock::cases()));
+
+		$this->assertEquals(PureEnumMock::CASE2,
+				$dataSet->optEnum('key2', PureEnumMock::cases()));
+
+		$dataSet->optEnum('key3', PureEnumMock::cases());
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqScalar() {
+		$dataSet = new DataSet(['key1' => 'value-1', 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertEquals('value-1',
+				$dataSet->reqScalar('key1', false));
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqScalar('key2', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqScalarMissingAttributes() {
+		$dataSet = new DataSet(['key1' => 'value-1']);
+		$this->assertEquals('value-1',
+				$dataSet->reqScalar('key1', false));
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqScalar('key3', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 */
+	function testOptScalar() {
+		$dataSet = new DataSet(['key1' => 'value-1', 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertEquals('value-1',
+				$dataSet->optScalar('key1', false));
+
+		$dataSet->optScalar('key3', false);
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optScalar('key2', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqBool() {
+		$dataSet = new DataSet(['key1' => true, 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(true,
+				$dataSet->reqBool('key1', false, false));
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqBool('key2', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqBoolMissingAttributes() {
+		$dataSet = new DataSet(['key1' => true]);
+		$this->assertSame(true,
+				$dataSet->reqBool('key1', false, false));
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqBool('key3', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 */
+	function testOptBool() {
+		$dataSet = new DataSet(['key1' => false, 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(false,
+				$dataSet->optBool('key1', false, true, false));
+
+		$dataSet->optBool('key3', false, true, false);
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optBool('key2', false, true, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqNumeric() {
+		$dataSet = new DataSet(['key1' => 10, 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10,
+				$dataSet->reqNumeric('key1', false));
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqNumeric('key2', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqNumericMissingAttributes() {
+		$dataSet = new DataSet(['key1' => '10']);
+		$this->assertSame('10',
+				$dataSet->reqNumeric('key1', false));
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqNumeric('key3', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 */
+	function testOptNumeric() {
+		$dataSet = new DataSet(['key1' => 10.01, 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10.01,
+				$dataSet->optNumeric('key1', false, true));
+
+		$dataSet->optNumeric('key3', false, true);
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optNumeric('key2', false, true);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqInt() {
+		$dataSet = new DataSet(['key1' => 10, 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10,
+				$dataSet->reqInt('key1', false));
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqInt('key2', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqIntMissingAttributes() {
+		$dataSet = new DataSet(['key1' => 10]);
+		$this->assertSame(10,
+				$dataSet->reqInt('key1', false));
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqInt('key3', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 */
+	function testOptInt() {
+		$dataSet = new DataSet(['key1' => 10.01, 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10,
+				$dataSet->optInt('key1', false, true));
+
+		$dataSet->optInt('key3', false, true);
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optInt('key2', false, true);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqArray() {
+		$dataSet = new DataSet(['key1' => ['val1' => 10], 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(['val1' => 10],
+				$dataSet->reqArray('key1', 'int'));
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqArray('key2', 'int', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqArrayMissingAttributes() {
+		$dataSet = new DataSet(['key1' => [10]]);
+		$this->assertSame([10],
+				$dataSet->reqArray('key1', 'int'));
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqArray('key3', 'int');
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 */
+	function testOptArray() {
+		$dataSet = new DataSet(['key1' => [10], 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame([10],
+				$dataSet->optArray('key1', 'int', true));
+
+		$dataSet->optArray('key3', 'int', true);
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optArray('key2', 'int', true);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqScalarArray() {
+		$dataSet = new DataSet(['key1' => [10], 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame([10],
+				$dataSet->reqScalarArray('key1', false));
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqScalarArray('key2', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqScalarArrayMissingAttributes() {
+		$dataSet = new DataSet(['key1' => [10]]);
+		$this->assertSame([10],
+				$dataSet->reqScalarArray('key1', false));
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqScalarArray('key3', false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 */
+	function testOptScalarArray() {
+		$dataSet = new DataSet(['key1' => [10], 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame([10],
+				$dataSet->optScalarArray('key1', false, true));
+
+		$dataSet->optScalarArray('key3', false, true);
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optScalarArray('key2', false, true);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 * @throws IllegalValueException
+	 */
+	function testReqStringValueObject() {
+		$dataSet = new DataSet(['key1' => new StringValueObjectMock(10) ,'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame('10',
+				$dataSet->reqStringValueObject('key1', StringValueObjectMock::class)->toScalar());
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqStringValueObject('key2', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqStringValueObjectMissingAttributes() {
+		$dataSet = new DataSet(['key1' => new StringValueObjectMock('10')]);
+		$this->assertSame('10',
+				$dataSet->reqStringValueObject('key1', StringValueObjectMock::class)->toScalar());
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqStringValueObject('key3', StringValueObjectMock::class);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws IllegalValueException
+	 */
+	function testOptStringValueObject() {
+		$dataSet = new DataSet(['key1' => new StringValueObjectMock(10.01), 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame('10.01',
+				$dataSet->optStringValueObject('key1', StringValueObjectMock::class, null)->toScalar());
+
+		$dataSet->optStringValueObject('key3', StringValueObjectMock::class, null );
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optStringValueObject('key2', StringValueObjectMock::class, null);
+	}
+
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 * @throws IllegalValueException
+	 */
+	function testReqIntValueObject() {
+		$dataSet = new DataSet(['key1' => new IntValueObjectMock(10) ,'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10,
+				$dataSet->reqIntValueObject('key1', IntValueObjectMock::class)->toScalar());
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqIntValueObject('key2', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqIntValueObjectMissingAttributes() {
+		$dataSet = new DataSet(['key1' => new IntValueObjectMock('10')]);
+		$this->assertSame(10,
+				$dataSet->reqIntValueObject('key1', IntValueObjectMock::class)->toScalar());
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqIntValueObject('key3', IntValueObjectMock::class);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws IllegalValueException
+	 */
+	function testOptIntValueObject() {
+		$dataSet = new DataSet(['key1' => new IntValueObjectMock(10), 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10,
+				$dataSet->optIntValueObject('key1', IntValueObjectMock::class, null)->toScalar());
+
+		$dataSet->optIntValueObject('key3', IntValueObjectMock::class, null );
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optIntValueObject('key2', IntValueObjectMock::class, null);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws IllegalValueException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqFloatValueObject() {
+		$dataSet = new DataSet(['key1' => new FloatValueObjectMock(10.01) ,'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10.01,
+				$dataSet->reqFloatValueObject('key1', FloatValueObjectMock::class)->toScalar());
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqFloatValueObject('key2', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 * @throws IllegalValueException
+	 */
+	function testReqFloatValueObjectMissingAttributes() {
+		$dataSet = new DataSet(['key1' => new FloatValueObjectMock(10.01)]);
+		$this->assertSame(10.01,
+				$dataSet->reqFloatValueObject('key1', FloatValueObjectMock::class)->toScalar());
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqFloatValueObject('key3', FloatValueObjectMock::class);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws IllegalValueException
+	 */
+	function testOptFloatValueObject() {
+		$dataSet = new DataSet(['key1' => new FloatValueObjectMock(10.01), 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(10.01,
+				$dataSet->optFloatValueObject('key1', FloatValueObjectMock::class, null)->toScalar());
+
+		$dataSet->optFloatValueObject('key3', FloatValueObjectMock::class, null );
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optFloatValueObject('key2', FloatValueObjectMock::class, null);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 * @throws IllegalValueException
+	 */
+	function testReqBoolValueObject() {
+		$dataSet = new DataSet(['key1' => new BoolValueObjectMock(false) ,'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(false,
+				$dataSet->reqBoolValueObject('key1', BoolValueObjectMock::class)->toScalar());
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->reqBoolValueObject('key2', false, false);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	function testReqBoolValueObjectMissingAttributes() {
+		$dataSet = new DataSet(['key1' => new BoolValueObjectMock(true)]);
+		$this->assertSame(true,
+				$dataSet->reqBoolValueObject('key1', BoolValueObjectMock::class)->toScalar());
+
+		$this->expectException(MissingAttributeFieldException::class);
+		$dataSet->reqBoolValueObject('key3', BoolValueObjectMock::class);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws IllegalValueException
+	 */
+	function testOptBoolValueObject() {
+		$dataSet = new DataSet(['key1' => new BoolValueObjectMock(false), 'key2' => StringBackedEnumMock::VALUE1]);
+		$this->assertSame(false,
+				$dataSet->optBoolValueObject('key1', BoolValueObjectMock::class, null)->toScalar());
+
+		$dataSet->optBoolValueObject('key3', BoolValueObjectMock::class, null );
+
+		$this->expectException(InvalidAttributeException::class);
+		$dataSet->optBoolValueObject('key2', BoolValueObjectMock::class, null);
 	}
 }

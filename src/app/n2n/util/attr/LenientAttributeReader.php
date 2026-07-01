@@ -29,28 +29,20 @@ class LenientAttributeReader {
 	public function __construct(DataSet $attributes) {
 		$this->attributes = $attributes;
 	}
-	
-	/**
-	 *
-	 * @return boolean
-	 */
+
 	public function isEmpty(): bool {
 		return $this->attributes->isEmpty();
 	}
-	
-	/**
-	 *
-	 * @return boolean
-	 */
+
 	public function contains($name): bool {
 		return $this->attributes->contains($name);
 	}
 	
-	public function getNames() {
+	public function getNames(): array {
 		return $this->attributes->getNames();
 	}
 	
-	public function hasKey($name, $key) {
+	public function hasKey($name, $key): bool {
 		return $this->attributes->hasKey($name, $key);
 	}
 	
@@ -85,7 +77,7 @@ class LenientAttributeReader {
 	
 	public function getBool($name, $fallbackValue = null, $nullAllowed = false, $lenient = true) {
 		try {
-			return $this->attributes->optBool($name, $fallbackValue, $nullAllowed);
+			return $this->attributes->optBool($name, $fallbackValue, $nullAllowed, $lenient);
 		} catch (AttributesException $e) {
 			return $fallbackValue;
 		}
@@ -101,7 +93,7 @@ class LenientAttributeReader {
 	
 	public function getInt($name, $fallbackValue = null, bool $nullAllowed = false, bool $lenient = true) {
 		try {
-			return $this->attributes->optInt($name, $fallbackValue, $nullAllowed);
+			return $this->attributes->optInt($name, $fallbackValue, $nullAllowed, $lenient);
 		} catch (AttributesException $e) {
 			return $fallbackValue;
 		}
@@ -139,12 +131,8 @@ class LenientAttributeReader {
 			return $fallbackValue;
 		}
 	}
-	
-	/**
-	 *
-	 * @return array
-	 */
-	public function toArray() {
+
+	public function toArray(): array {
 		return $this->attributes->toArray();
 	}
 }

@@ -67,7 +67,7 @@ class AttributePath {
 	 * @deprecated use {@link self::slice()}
 	 */
 	public function slices(int $offset, ?int $length = null): AttributePath {
-		return new AttributePath(array_slice($this->names, $offset, $length));
+		return $this->slice($offset, $length);
 	}
 
 	public function slice(int $offset, ?int $length = null): AttributePath {
@@ -140,7 +140,7 @@ class AttributePath {
 	 * @param array $expressions
 	 * @return \n2n\util\attr\AttributePath[]
 	 */
-	public static function createArray(array $expressions) {
+	public static function createArray(array $expressions): array {
 		$paths = [];
 		foreach ($expressions as $expression) {
 			$paths[] = self::create($expression);

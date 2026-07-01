@@ -21,8 +21,6 @@
  */
 namespace n2n\util\attr;
 
-use n2n\util\type\TypeConstraint;
-
 interface AttributeWriter {
 
 	/**

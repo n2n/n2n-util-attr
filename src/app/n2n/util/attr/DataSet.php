@@ -23,64 +23,85 @@ namespace n2n\util\attr;
 
 use n2n\util\type\TypeConstraint;
 use n2n\util\type\ValueIncompatibleWithConstraintsException;
-use n2n\util\col\ArrayUtils;
 use n2n\util\StringUtils;
-use n2n\util\type\TypeUtils;
 use n2n\util\type\TypeName;
-use n2n\util\EnumUtils;
 use n2n\util\type\TypeConstraints;
 use Stringable;
+use n2n\util\ex\IllegalStateException;
 
+/**
+ * @mixin ValueObjReqAndOptTrait
+ * @mixin BasicReqAndOptTrait
+ */
 class DataSet implements AttributeReader, AttributeWriter {
+	use BasicReqAndOptTrait;
+	use ValueObjReqAndOptTrait;
 	private $attrs;
 	private $interceptor;
-	/**
-	 *
-	 * @param array $attrs
-	 */
+
+
 	public function __construct(?array $attrs = null) {
 		$this->attrs = (array) $attrs;
 	}
 
 	/**
-	 *
-	 * @return boolean
+	 * @param string $name
+	 * @param TypeConstraint|null $type
+	 * @return mixed
+	 * @throws MissingAttributeFieldException
+	 * @throws InvalidAttributeException
+	 * all Type based req functions are served by {@link BasicReqAndOptTrait}
+	 * all ValueObjectType based req functions are served by {@link ValueObjReqAndOptTrait}
 	 */
-	public function isEmpty() {
+	public function req(string $name, ?TypeConstraint $type = null) {
+		return $this->retrieve($name, $type, true);
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * all Type based opt functions are served by {@link BasicReqAndOptTrait}
+	 * all ValueObjectType based opt functions are served by {@link ValueObjReqAndOptTrait}
+	 */
+	public function opt(string $name, ?TypeConstraint $type = null, $defaultValue = null) {
+		try {
+			return $this->retrieve($name, $type, false, $defaultValue);
+		} catch (MissingAttributeFieldException $e) {
+			throw new IllegalStateException('opt() must ignore missing attributes.', previous: $e);
+		}
+	}
+	public function isEmpty(): bool {
 		return empty($this->attrs);
 	}
-	/**
-	 *
-	 * @return boolean
-	 */
-	public function contains(string $name) {
+
+	public function contains(string $name): bool {
 		return array_key_exists($name, $this->attrs);
 	}
 
-	public function getNames() {
+	/**
+	 * @return int[]|string[]
+	 */
+	public function getNames(): array {
 		return array_keys($this->attrs);
 	}
 
-	public function hasKey(string $name, $key) {
+	public function hasKey(string $name, $key): bool {
 		return array_key_exists($name, $this->attrs)
 				&& is_array($this->attrs[$name])
 				&& array_key_exists($key, $this->attrs[$name]);
 	}
+
 	/**
-	 *
-	 * @param string $name
 	 * @param mixed $value
 	 */
-	public function set(string $name, $value) {
+	public function set(string $name, $value): void {
 		$this->attrs[$name] = $value;
 	}
+
 	/**
-	 *
-	 * @param string $name
 	 * @param mixed $key scalar
 	 * @param mixed $value
 	 */
-	public function add(string $name, string $key, $value) {
+	public function add(string $name, string $key, $value): void {
 		if(!isset($this->attrs[$name]) || !is_array($this->attrs[$name])) {
 			$this->attrs[$name] = array();
 		}
@@ -92,7 +113,7 @@ class DataSet implements AttributeReader, AttributeWriter {
 	 * @param string $name
 	 * @param mixed $value
 	 */
-	public function push(string $name, $value) {
+	public function push(string $name, $value): void {
 		if(!isset($this->attrs[$name]) || !is_array($this->attrs[$name])) {
 			$this->attrs[$name] = array();
 		}
@@ -100,6 +121,10 @@ class DataSet implements AttributeReader, AttributeWriter {
 		$this->attrs[$name][] = $value;
 	}
 
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
 	private function retrieve(?string $name, $type, $mandatory, $defaultValue = null, &$found = null) {
 		$typeConstraint = TypeConstraint::build($type);
 
@@ -130,8 +155,10 @@ class DataSet implements AttributeReader, AttributeWriter {
 	 * @param string|AttributePath|array $name
 	 * @param bool $mandatory
 	 * @param mixed|null $defaultValue
-	 * @param bool $nullAllowed
+	 * @param TypeConstraint|null $typeConstraint
 	 * @return mixed|null
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 * @deprecated use {@see self::req()} or {@see self::opt()}
 	 */
 	public function get($name, bool $mandatory = true, $defaultValue = null, ?TypeConstraint $typeConstraint = null) {
@@ -142,28 +169,16 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return $this->opt($name, $typeConstraint, $defaultValue);
 	}
 
+
+
 	/**
 	 * @param string $name
-	 * @param bool $mandatory
-	 * @param mixed $defaultValue
-	 * @param TypeConstraint $typeConstraint
-	 * @throws InvalidAttributeException
-	 * @return mixed
-	 */
-	public function req(string $name, $type = null) {
-		return $this->retrieve($name, $type, true);
-	}
-
-	public function opt(string $name, $type = null, $defaultValue = null) {
-		return $this->retrieve($name, $type, false, $defaultValue);
-	}
-
-	/**
-	 * @param string|AttributePath|array $name
 	 * @param bool $mandatory
 	 * @param mixed|null $defaultValue
 	 * @param bool $nullAllowed
 	 * @return mixed|null
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 * @deprecated use {@see self::reqScalar()} or {@see self::optScalar()}
 	 */
 	public function getScalar(string $name, bool $mandatory = true, $defaultValue = null, bool $nullAllowed = false) {
@@ -174,13 +189,6 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return $this->optScalar($name, $defaultValue, $nullAllowed);
 	}
 
-	public function reqScalar(string $name, bool $nullAllowed = false) {
-		return $this->req($name, TypeConstraint::createSimple('scalar', $nullAllowed));
-	}
-
-	public function optScalar(string $name, $defaultValue = null, bool $nullAllowed = true) {
-		return $this->opt($name, TypeConstraint::createSimple('scalar', $nullAllowed), $defaultValue);
-	}
 
 	/**
 	 * @param string|AttributePath|array $name
@@ -189,6 +197,7 @@ class DataSet implements AttributeReader, AttributeWriter {
 	 * @param bool $nullAllowed
 	 * @return mixed|null
 	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 * @deprecated use {@see self::reqString()} or {@see self::optString()}
 	 */
 	public function getString(string $name, bool $mandatory = true, $defaultValue = null, bool $nullAllowed = false) {
@@ -200,7 +209,9 @@ class DataSet implements AttributeReader, AttributeWriter {
 	}
 
 	/**
+	 * @return array|mixed|string|null
 	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 */
 	public function reqString(string $name, bool $nullAllowed = false, bool $lenient = true) {
 
@@ -216,6 +227,9 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return StringUtils::strOrNullOf($this->req($name, TypeConstraints::type($typeNames)));
 	}
 
+	/**
+	 * @throws InvalidAttributeException
+	 */
 	public function optString(string $name, $defaultValue = null, $nullAllowed = true, bool $lenient = true) {
 		if (!$lenient) {
 			return $this->opt($name, TypeConstraint::createSimple('string', $nullAllowed), $defaultValue);
@@ -230,11 +244,13 @@ class DataSet implements AttributeReader, AttributeWriter {
 	}
 
 	/**
-	 * @param string|AttributePath|array $name
+	 * @param string $name
 	 * @param bool $mandatory
 	 * @param mixed|null $defaultValue
 	 * @param bool $nullAllowed
 	 * @return mixed|null
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 * @deprecated use {@see self::reqBool()} or {@see self::optBool()}
 	 */
 	public function getBool(string $name, bool $mandatory = true, $defaultValue = null, bool $nullAllowed = false) {
@@ -245,99 +261,16 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return $this->optBool($name, $defaultValue, $nullAllowed);
 	}
 
-	public function reqBool(string $name, bool $nullAllowed = false, $lenient = true) {
-		if (!$lenient) {
-			return $this->req($name, TypeConstraint::createSimple('bool', $nullAllowed));
-		}
-
-		if (null !== ($value = $this->reqScalar($name, $nullAllowed))) {
-			return (bool) $value;
-		}
-
-		return null;
-	}
-
-	public function optBool(string $name, $defaultValue = null, bool $nullAllowed = true, $lenient = true) {
-		if (!$lenient) {
-			return $this->opt($name, TypeConstraint::createSimple('bool', $nullAllowed), $defaultValue);
-		}
-
-		if (null !== ($value = $this->optScalar($name, $defaultValue, $nullAllowed))) {
-			return (bool) $value;
-		}
-
-		return $defaultValue;
-	}
-
-	public function reqNumeric(string $name, bool $nullAllowed = false) {
-		return $this->req($name, TypeConstraint::createSimple('numeric', $nullAllowed));
-	}
-
-	public function optNumeric(string $name, $defaultValue = null, bool $nullAllowed = true) {
-		return $this->opt($name, TypeConstraint::createSimple('numeric', $nullAllowed), $defaultValue);
-	}
-
-	public function reqInt(string $name, bool $nullAllowed = false, $lenient = true) {
-		if (!$lenient) {
-			return $this->req($name, TypeConstraint::createSimple('int', $nullAllowed));
-		}
-
-		if (null !== ($value = $this->reqNumeric($name, $nullAllowed))) {
-			return (int) $value;
-		}
-
-		return null;
-	}
-
-	public function optInt(string $name, $defaultValue = null, bool $nullAllowed = true, $lenient = true) {
-		if (!$lenient) {
-			return $this->opt($name, TypeConstraint::createSimple('int', $nullAllowed), $defaultValue);
-		}
-
-		if (null !== ($value = $this->optNumeric($name, $defaultValue))) {
-			return (int) $value;
-		}
-
-		return $defaultValue;
-	}
-
-	public function reqEnum(string $name, array $allowedValues, bool $nullAllowed = false) {
-		return $this->getEnum($name, $allowedValues, true, null, $nullAllowed);
-	}
-
-	public function optEnum(string $name, array $allowedValues, $defaultValue = null, bool $nullAllowed = true) {
-		return $this->getEnum($name, $allowedValues, false, $defaultValue, $nullAllowed);
-	}
 
 	/**
-	 * @throws InvalidAttributeException
-	 * @throws MissingAttributeFieldException
-	 */
-	private function getEnum(string $name, array $allowedValues, $mandatory = true, $defaultValue = null, $nullAllowed = false) {
-		$found = null;
-		$value = $this->retrieve($name, null, $mandatory, $defaultValue, $found);
-
-		if (!$found) return $defaultValue;
-
-		if ($nullAllowed && $value === null) {
-			return $value;
-		}
-
-		try {
-			return EnumUtils::valueToPseudoUnit($value, $allowedValues);
-		} catch (\InvalidArgumentException $e) {
-			throw new InvalidAttributeException('Property \'' . $name
-					. '\' contains invalid value. Reason: ' . $e->getMessage(), 0, $e);
-		}
-	}
-
-	/**
-	 * @param string|AttributePath|array $name
+	 * @param string $name
 	 * @param bool $mandatory
 	 * @param mixed|null $defaultValue
-	 * @param TypeConstraint|string|null $fieldType
+	 * @param null $fieldType
 	 * @param bool $nullAllowed
 	 * @return mixed|null
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 * @deprecated use {@see self::reqArray()} or {@see self::optArray()}
 	 */
 	public function getArray(string $name, bool $mandatory = true, $defaultValue = array(), $fieldType = null, bool $nullAllowed = false) {
@@ -350,21 +283,28 @@ class DataSet implements AttributeReader, AttributeWriter {
 
 	/**
 	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 */
 	public function reqArray(string $name, $fieldType = null, bool $nullAllowed = false) {
 		return $this->req($name, TypeConstraint::createArrayLike('array', $nullAllowed, $fieldType));
 	}
 
+	/**
+	 * @throws InvalidAttributeException
+	 */
 	public function optArray(string $name, $fieldType = null, $defaultValue = [], bool $nullAllowed = false) {
 		return $this->opt($name, TypeConstraint::createArrayLike('array', $nullAllowed, $fieldType), $defaultValue);
 	}
 
 	/**
-	 * @param string|AttributePath|array $name
+	 * @param string $name
 	 * @param bool $mandatory
 	 * @param mixed|null $defaultValue
 	 * @param bool $nullAllowed
+	 * @param bool $fieldNullAllowed
 	 * @return mixed|null
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 * @deprecated use {@see self::reqScalarArray()} or {@see self::optScalarArray()}
 	 */
 	public function getScalarArray(string $name, bool $mandatory = true, $defaultValue = array(), bool $nullAllowed = false, bool $fieldNullAllowed = true) {
@@ -375,41 +315,20 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return $this->optScalarArray($name, $defaultValue, $nullAllowed, $fieldNullAllowed);
 	}
 
-	/**
-	 * @param string $name
-	 * @param bool $nullAllowed
-	 * @param bool $fieldNullAllowed
-	 * @return array|null
-	 */
-	public function reqScalarArray(string $name, bool $nullAllowed = false, bool $fieldNullAllowed = false) {
-		return $this->reqArray($name, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $nullAllowed);
-	}
 
 	/**
-	 * @param string $name
-	 * @param array $defaultValue
-	 * @param bool $nullAllowed
-	 * @param bool $fieldNullAllowed
-	 * @return array|mixed
-	 */
-	public function optScalarArray(string $name, $defaultValue = [], bool $nullAllowed = false, bool $fieldNullAllowed = false) {
-		return $this->optArray($name, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $defaultValue, $nullAllowed);
-	}
-
-	/**
-	 * @param string $name
-	 * @param bool $nullAllowed
-	 * @return \n2n\util\attr\DataSet|null
+	 * @return DataSet|null
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 */
 	public function reqDataSet(string $name, bool $nullAllowed = false) {
 		return new DataSet($this->reqArray($name, null, $nullAllowed));
 	}
 
 	/**
-	 * @param string $name
 	 * @param mixed $defaultValue
-	 * @param bool $nullAllowed
-	 * @return \n2n\util\attr\DataSet|null
+	 * @return DataSet|null
+	 * @throws InvalidAttributeException
 	 */
 	public function optDataSet(string $name, $defaultValue = null, bool $nullAllowed = true) {
 		if (null !== ($array = $this->optArray($name, null, $defaultValue, $nullAllowed))) {
@@ -420,9 +339,9 @@ class DataSet implements AttributeReader, AttributeWriter {
 	}
 
 	/**
-	 * @param string $name
-	 * @param bool $nullAllowed
-	 * @return \n2n\util\attr\DataSet[]|null
+	 * @return DataSet[]|null
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
 	 */
 	public function reqDataSets(string $name, bool $nullAllowed = false) {
 		$dataSetDatas = $this->reqArray($name, TypeName::ARRAY, $nullAllowed);
@@ -466,21 +385,21 @@ class DataSet implements AttributeReader, AttributeWriter {
 	/**
 	 * @return array
 	 */
-	public function toArray() {
+	public function toArray(): array {
 		return $this->attrs;
 	}
 
 	/**
 	 * @param DataSet $dataSet
 	 */
-	public function append(DataSet $dataSet) {
+	public function append(DataSet $dataSet): void {
 		$this->appendAll($dataSet->toArray());
 	}
 
 	/**
 	 * @param array $attrs
 	 */
-	public function appendAll(array $attrs, bool $ignoreNull = false) {
+	public function appendAll(array $attrs, bool $ignoreNull = false): void {
 		foreach ($attrs as $key => $value) {
 			if ($ignoreNull && $value === null) continue;
 
@@ -493,11 +412,11 @@ class DataSet implements AttributeReader, AttributeWriter {
 		}
 	}
 
-	public function removeNulls(bool $recursive = false) {
+	public function removeNulls(bool $recursive = false): void {
 		$this->removeNullsR($this->attrs, $recursive);
 	}
 
-	private function removeNullsR(array &$attrs, bool $recursive = false) {
+	private function removeNullsR(array &$attrs, bool $recursive = false): void {
 		foreach ($attrs as $key => $value) {
 			if (!isset($attrs[$key])) {
 				unset($attrs[$key]);
@@ -534,21 +453,19 @@ class DataSet implements AttributeReader, AttributeWriter {
 		return $attrs;
 	}
 	/**
-	 *
 	 * @return string
 	 */
-	public function serialize() {
+	public function serialize(): string {
 		return serialize($this->attrs);
 	}
+
 	/**
-	 *
 	 * @param string $serialized
-	 * @param \n2n\util\UnserializationFailedException
 	 */
-	public static function createFromSerialized($serialized) {
+	public static function createFromSerialized($serialized): DataSet {
 		$attrs = StringUtils::unserialize($serialized);
 		if (!is_array($attrs)) $attrs = array();
-		return new Attributes($attrs);
+		return new DataSet($attrs);
 	}
 
 	function containsAttribute(AttributePath $path): bool {
