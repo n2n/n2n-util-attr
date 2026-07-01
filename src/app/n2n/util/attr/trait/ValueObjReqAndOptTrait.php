@@ -15,11 +15,13 @@ use n2n\util\attr\InvalidAttributeException;
 /**
  */
 trait ValueObjReqAndOptTrait {
+	use RetrieveTrait;
+
 	/**
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	protected function reqValueObject(string $expectedClass, $path, string $typeName, bool $nullAllowed = false) {
+	private function reqValueObject(string $expectedClass, $path, string $typeName, bool $nullAllowed = false) {
 		if (!TypeUtils::isTypeA($typeName, $expectedClass)) {
 			throw new InvalidAttributeException('Property \'' . $path
 					. '\' contains invalid value. Reason: Type is not ' . $expectedClass, 0, null
@@ -36,7 +38,7 @@ trait ValueObjReqAndOptTrait {
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	protected function optValueObject(string $expectedClass, $path, string $typeName,
+	private function optValueObject(string $expectedClass, $path, string $typeName,
 			$defaultValue = null, bool $nullAllowed = true) {
 		if (!TypeUtils::isTypeA($typeName, $expectedClass)) {
 			throw new InvalidAttributeException('Property \'' . $path

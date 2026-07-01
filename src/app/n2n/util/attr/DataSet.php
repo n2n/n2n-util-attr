@@ -30,7 +30,6 @@ use n2n\util\attr\trait\BasicReqAndOptTrait;
 use n2n\util\attr\trait\ValueObjReqAndOptTrait;
 
 class DataSet implements AttributeReader, AttributeWriter {
-	use RetrieveTrait;
 	use BasicReqAndOptTrait;
 	use ValueObjReqAndOptTrait;
 

@@ -14,7 +14,7 @@ trait RetrieveTrait {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	protected abstract function retrieve(AttributePath|\Stringable|array|string|null $path,
+	protected abstract function retrieve(mixed $path,
 			TypeConstraint|null|ReflectionClass|string $type,
 			bool $mandatory, mixed $defaultValue = null, mixed &$found = null): mixed;
 
@@ -26,7 +26,7 @@ trait RetrieveTrait {
 	 * all Type based req functions are served by {@link BasicReqAndOptTrait}
 	 * all ValueObjectType based req functions are served by {@link ValueObjReqAndOptTrait}
 	 */
-	public function req($path, ?TypeConstraint $type = null) {
+	public function req(mixed $path, ?TypeConstraint $type = null) {
 		return $this->retrieve($path, $type, true);
 	}
 
@@ -38,7 +38,7 @@ trait RetrieveTrait {
 	 * all Type based opt functions are served by {@link BasicReqAndOptTrait}
 	 * all ValueObjectType based opt functions are served by {@link ValueObjReqAndOptTrait}
 	 */
-	public function opt($path, ?TypeConstraint $type = null, $defaultValue = null) {
+	public function opt(mixed $path, ?TypeConstraint $type = null, $defaultValue = null) {
 		try {
 			return $this->retrieve($path, $type, false, $defaultValue);
 		} catch (MissingAttributeFieldException $e) {
