@@ -73,6 +73,7 @@ class DataSetTest extends TestCase {
 		$this->assertSame('value-2', $dataSet->optString('key2'));
 		$this->assertNull($dataSet->optString('key3'));
 		$this->assertNull($dataSet->optString('key4'));
+		$this->assertSame('holeradio', $dataSet->optString('key4', defaultValue: 'holeradio'));
 	}
 
 	function testOptStringNotLenientStringable(): void {

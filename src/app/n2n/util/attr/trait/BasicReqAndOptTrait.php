@@ -60,7 +60,7 @@ trait BasicReqAndOptTrait {
 			$typeNames[] = 'null';
 		}
 
-		return StringUtils::strOrNullOf($this->opt($path, TypeConstraints::type($typeNames)));
+		return StringUtils::strOrNullOf($this->opt($path, TypeConstraints::type($typeNames), $defaultValue));
 
 	}
 
