@@ -97,6 +97,7 @@ class DataSet implements AttributeReader, AttributeWriter {
 	 */
 	private function retrieve($name, $type, $mandatory, $defaultValue = null, &$found = null): mixed {
 		$typeConstraint = TypeConstraint::build($type);
+		$name = AttributePath::build($name)?->__toString();
 
 		if ($name !== null && !$this->contains($name)) {
 			$found = false;

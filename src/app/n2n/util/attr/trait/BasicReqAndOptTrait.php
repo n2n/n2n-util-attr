@@ -50,7 +50,7 @@ trait BasicReqAndOptTrait {
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optString($path, $defaultValue = null, $nullAllowed = true, bool $lenient = true) {
+	public function optString($path, ?string $defaultValue = null, $nullAllowed = true, bool $lenient = true) {
 		if (!$lenient) {
 			return $this->opt($path, TypeConstraint::createSimple('string', $nullAllowed), $defaultValue);
 		}
@@ -83,7 +83,7 @@ trait BasicReqAndOptTrait {
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optBool($path, $defaultValue = null, bool $nullAllowed = true, $lenient = true) {
+	public function optBool($path, ?bool $defaultValue = null, bool $nullAllowed = true, $lenient = true) {
 		if (!$lenient) {
 			return $this->opt($path, TypeConstraint::createSimple('bool', $nullAllowed), $defaultValue);
 		}
@@ -92,7 +92,7 @@ trait BasicReqAndOptTrait {
 			return (bool) $value;
 		}
 
-		return $defaultValue;
+		return null;
 	}
 
 	/**
@@ -129,13 +129,44 @@ trait BasicReqAndOptTrait {
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optInt($path, $defaultValue = null, bool $nullAllowed = true, $lenient = true) {
+	public function optInt($path, ?int $defaultValue = null, bool $nullAllowed = true, $lenient = true) {
 		if (!$lenient) {
 			return $this->opt($path, TypeConstraint::createSimple('int', $nullAllowed), $defaultValue);
 		}
 
 		if (null !== ($value = $this->optNumeric($path, $defaultValue))) {
 			return (int) $value;
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 * @throws MissingAttributeFieldException
+	 */
+	public function reqFloat($path, bool $nullAllowed = false, $lenient = true): ?float {
+		if (!$lenient) {
+			return $this->req($path, TypeConstraint::createSimple('float', $nullAllowed));
+		}
+
+		if (null !== ($value = $this->reqNumeric($path, $nullAllowed))) {
+			return (float) $value;
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws InvalidAttributeException
+	 */
+	public function optFloat($path, ?float $defaultValue = null, bool $nullAllowed = true, $lenient = true): ?float {
+		if (!$lenient) {
+			return $this->opt($path, TypeConstraint::createSimple('float', $nullAllowed), $defaultValue);
+		}
+
+		if (null !== ($value = $this->optNumeric($path, $defaultValue))) {
+			return (float) $value;
 		}
 
 		return null;
@@ -183,7 +214,7 @@ trait BasicReqAndOptTrait {
 		if (!$found) return $defaultValue;
 
 		if ($nullAllowed && $value === null) {
-			return $value;
+			return null;
 		}
 
 		try {
