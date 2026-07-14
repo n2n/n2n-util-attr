@@ -398,13 +398,12 @@ class DataMapTest extends TestCase {
 	 */
 	function testOptArray() {
 		$dataMap = new DataMap(['key1' => [10], 'key2' => StringBackedEnumMock::VALUE1]);
-		$this->assertSame([10],
-				$dataMap->optArray('key1', 'int', true));
+		$this->assertSame([10], $dataMap->optArray('key1', 'int'));
 
-		$dataMap->optArray('missing', 'int', true);
+		$this->assertSame([2], $dataMap->optArray('missing', 'int', [2]));
 
 		$this->expectException(InvalidAttributeException::class);
-		$dataMap->optArray('key2', 'int', true);
+		$dataMap->optArray('key2', 'int');
 	}
 
 	/**
@@ -438,13 +437,12 @@ class DataMapTest extends TestCase {
 	 */
 	function testOptScalarArray() {
 		$dataMap = new DataMap(['key1' => [10], 'key2' => StringBackedEnumMock::VALUE1]);
-		$this->assertSame([10],
-				$dataMap->optScalarArray('key1', false, true));
+		$this->assertSame([10], $dataMap->optScalarArray('key1', [11]));
 
-		$dataMap->optScalarArray('missing', false, true);
+		$this->assertSame([12], $dataMap->optScalarArray('missing', [12]));
 
 		$this->expectException(InvalidAttributeException::class);
-		$dataMap->optScalarArray('key2', false, true);
+		$dataMap->optScalarArray('key2');
 	}
 
 	/**

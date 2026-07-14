@@ -354,13 +354,12 @@ class DataSetTest extends TestCase {
 	 */
 	function testOptArray() {
 		$dataSet = new DataSet(['key1' => [10], 'key2' => StringBackedEnumMock::VALUE1]);
-		$this->assertSame([10],
-				$dataSet->optArray('key1', 'int', true));
+		$this->assertSame([10], $dataSet->optArray('key1', 'int', [11]));
 
-		$dataSet->optArray('key3', 'int', true);
+		$this->assertSame([13], $dataSet->optArray('key3', 'int', [13]));
 
 		$this->expectException(InvalidAttributeException::class);
-		$dataSet->optArray('key2', 'int', true);
+		$dataSet->optArray('key2', 'int');
 	}
 
 	/**
@@ -394,13 +393,12 @@ class DataSetTest extends TestCase {
 	 */
 	function testOptScalarArray() {
 		$dataSet = new DataSet(['key1' => [10], 'key2' => StringBackedEnumMock::VALUE1]);
-		$this->assertSame([10],
-				$dataSet->optScalarArray('key1', false, true));
+		$this->assertSame([10], $dataSet->optScalarArray('key1', [11]));
 
-		$dataSet->optScalarArray('key3', false, true);
+		$this->assertSame([12], $dataSet->optScalarArray('key3', [12]));
 
 		$this->expectException(InvalidAttributeException::class);
-		$dataSet->optScalarArray('key2', false, true);
+		$dataSet->optScalarArray('key2');
 	}
 
 	/**
