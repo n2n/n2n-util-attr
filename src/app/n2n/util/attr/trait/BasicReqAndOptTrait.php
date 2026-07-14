@@ -19,14 +19,14 @@ trait BasicReqAndOptTrait {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	public function reqScalar($path, bool $nullAllowed = false) {
+	public function reqScalar($path, bool $nullAllowed = false): string|float|int|bool|null {
 		return $this->req($path, TypeConstraint::createSimple('scalar', $nullAllowed));
 	}
 
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optScalar($path, $defaultValue = null, bool $nullAllowed = true) {
+	public function optScalar($path, string|float|int|bool|null $defaultValue = null, bool $nullAllowed = true): string|float|int|bool|null {
 		return $this->opt($path, TypeConstraint::createSimple('scalar', $nullAllowed), $defaultValue);
 	}
 
@@ -99,14 +99,14 @@ trait BasicReqAndOptTrait {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	public function reqNumeric($path, bool $nullAllowed = false) {
+	public function reqNumeric($path, bool $nullAllowed = false): int|float|string|null {
 		return $this->req($path, TypeConstraint::createSimple('numeric', $nullAllowed));
 	}
 
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optNumeric($path, $defaultValue = null, bool $nullAllowed = true) {
+	public function optNumeric($path, int|float|string|null $defaultValue = null, bool $nullAllowed = true): int|float|string|null {
 		return $this->opt($path, TypeConstraint::createSimple('numeric', $nullAllowed), $defaultValue);
 	}
 
@@ -114,7 +114,7 @@ trait BasicReqAndOptTrait {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	public function reqInt($path, bool $nullAllowed = false, $lenient = true) {
+	public function reqInt($path, bool $nullAllowed = false, $lenient = true): ?int {
 		if (!$lenient) {
 			return $this->req($path, TypeConstraint::createSimple('int', $nullAllowed));
 		}
@@ -129,7 +129,7 @@ trait BasicReqAndOptTrait {
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optInt($path, ?int $defaultValue = null, bool $nullAllowed = true, $lenient = true) {
+	public function optInt($path, ?int $defaultValue = null, bool $nullAllowed = true, $lenient = true): ?int {
 		if (!$lenient) {
 			return $this->opt($path, TypeConstraint::createSimple('int', $nullAllowed), $defaultValue);
 		}
@@ -229,14 +229,14 @@ trait BasicReqAndOptTrait {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	public function reqArray($path, $fieldType = null, bool $nullAllowed = false, $keyType = null) {
+	public function reqArray($path, $fieldType = null, bool $nullAllowed = false, $keyType = null): ?array {
 		return $this->req($path, TypeConstraint::createArrayLike('array', $nullAllowed, $fieldType, arrayKeyType: $keyType));
 	}
 
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optArray($path, $fieldType = null, $defaultValue = [], bool $nullAllowed = false, $keyType = null) {
+	public function optArray($path, $fieldType = null, ?array $defaultValue = [], bool $nullAllowed = false, $keyType = null): ?array {
 		return $this->opt($path, TypeConstraint::createArrayLike('array', $nullAllowed, $fieldType, arrayKeyType: $keyType), $defaultValue);
 	}
 
@@ -244,14 +244,14 @@ trait BasicReqAndOptTrait {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	public function reqScalarArray($path, bool $nullAllowed = false, bool $fieldNullAllowed = false) {
+	public function reqScalarArray($path, bool $nullAllowed = false, bool $fieldNullAllowed = false): array {
 		return $this->reqArray($path, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $nullAllowed);
 	}
 
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optScalarArray($path, $defaultValue = [], bool $nullAllowed = false, bool $fieldNullAllowed = false) {
+	public function optScalarArray($path, ?array $defaultValue = [], bool $nullAllowed = false, bool $fieldNullAllowed = false): array {
 		return $this->optArray($path, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $defaultValue, $nullAllowed);
 	}
 }

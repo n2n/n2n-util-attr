@@ -15,6 +15,7 @@ use InvalidArgumentException;
 
 class DataMapTest extends TestCase {
 	use N2nTestCaseTrait;
+
 	function testSet() {
 		$dataMap = new DataMap(['key1' => ['skey1' => 'string']]);
 
