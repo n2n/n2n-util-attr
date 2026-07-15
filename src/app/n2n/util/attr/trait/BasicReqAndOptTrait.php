@@ -244,14 +244,14 @@ trait BasicReqAndOptTrait {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	public function reqScalarArray($path, bool $nullAllowed = false, bool $fieldNullAllowed = false): array {
+	public function reqScalarArray($path, bool $nullAllowed = false, bool $fieldNullAllowed = false): ?array {
 		return $this->reqArray($path, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $nullAllowed);
 	}
 
 	/**
 	 * @throws InvalidAttributeException
 	 */
-	public function optScalarArray($path, ?array $defaultValue = [], bool $nullAllowed = false, bool $fieldNullAllowed = false): array {
+	public function optScalarArray($path, ?array $defaultValue = [], bool $nullAllowed = false, bool $fieldNullAllowed = false): ?array {
 		return $this->optArray($path, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $defaultValue, $nullAllowed);
 	}
 }
