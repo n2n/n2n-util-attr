@@ -210,7 +210,7 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
-	function has($path) {
+	function has($path): bool {
 		$found = false;
 		$this->retrieve($path, null, false, null, $found);
 		return $found;
