@@ -254,5 +254,4 @@ trait BasicReqAndOptTrait {
 	public function optScalarArray($path, ?array $defaultValue = [], bool $nullAllowed = false, bool $fieldNullAllowed = false): ?array {
 		return $this->optArray($path, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $defaultValue, $nullAllowed);
 	}
-
 }
