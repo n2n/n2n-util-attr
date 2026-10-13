@@ -3,6 +3,7 @@ namespace n2n\util\attr;
 use PHPUnit\Framework\TestCase;
 use n2n\util\type\TypeConstraints;
 use n2n\spec\valobj\err\IllegalValueException;
+use n2n\util\attr\mock\EmailMock;
 
 class DataMapValueObjectsTest extends TestCase {
 	/**
@@ -13,8 +14,8 @@ class DataMapValueObjectsTest extends TestCase {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['email' => $emailStr]);
 		$email = $dataMap->req('email',
-				TypeConstraints::namedType(Email::class, false, true));
-		$this->assertInstanceOf(Email::class, $email);
+				TypeConstraints::namedType(EmailMock::class, false, true));
+		$this->assertInstanceOf(EmailMock::class, $email);
 		$this->assertEquals($emailStr, $email);
 	}
 
@@ -26,7 +27,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$emailStr = '';
 		$dataMap = new DataMap(['email' => $emailStr]);
 		$dataMap->req('email',
-				TypeConstraints::namedType(Email::class, false, true));
+				TypeConstraints::namedType(EmailMock::class, false, true));
 	}
 
 	/**
@@ -37,7 +38,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$emailStr = 'abcd';
 		$dataMap = new DataMap(['email' => $emailStr]);
 		$dataMap->req('email',
-				TypeConstraints::namedType(Email::class, false, true));
+				TypeConstraints::namedType(EmailMock::class, false, true));
 	}
 
 	/**
@@ -47,8 +48,8 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObject() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$email = $dataMap->reqValueObject('email',Email::class);
-		$this->assertInstanceOf(Email::class, $email);
+		$email = $dataMap->reqValueObject('email',EmailMock::class);
+		$this->assertInstanceOf(EmailMock::class, $email);
 		$this->assertEquals($emailStr, $email);
 	}
 	/**
@@ -68,7 +69,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObjectNull() {
 		$emailStr = null;
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$email = $dataMap->reqValueObject('email',Email::class, true);
+		$email = $dataMap->reqValueObject('email',EmailMock::class, true);
 		$this->assertNull($email);
 	}
 
@@ -81,7 +82,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = null;
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$dataMap->reqValueObject('email',Email::class);
+		$dataMap->reqValueObject('email',EmailMock::class);
 	}
 
 	/**
@@ -91,7 +92,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = '';
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$dataMap->reqValueObject('email', Email::class);
+		$dataMap->reqValueObject('email', EmailMock::class);
 	}
 
 	/**
@@ -101,7 +102,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = 'abcd';
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$dataMap->reqValueObject('email', Email::class);
+		$dataMap->reqValueObject('email', EmailMock::class);
 	}
 
 	/**
@@ -111,8 +112,8 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObject() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$email = $dataMap->optValueObject('email',Email::class);
-		$this->assertInstanceOf(Email::class, $email);
+		$email = $dataMap->optValueObject('email',EmailMock::class);
+		$this->assertInstanceOf(EmailMock::class, $email);
 		$this->assertEquals($emailStr, $email);
 	}
 	/**
@@ -132,7 +133,7 @@ class DataMapValueObjectsTest extends TestCase {
 	 */
 	function testOptValueObjectNoKey() {
 		$dataMap = new DataMap();
-		$email = $dataMap->optValueObject('email',Email::class);
+		$email = $dataMap->optValueObject('email',EmailMock::class);
 		$this->assertNull($email);
 	}
 
@@ -143,8 +144,8 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObjectDefaultValue() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap();
-		$email = $dataMap->optValueObject('email',Email::class, defaultValue: new Email($emailStr));
-		$this->assertInstanceOf(Email::class, $email);
+		$email = $dataMap->optValueObject('email',EmailMock::class, defaultValue: new EmailMock($emailStr));
+		$this->assertInstanceOf(EmailMock::class, $email);
 		$this->assertEquals($emailStr, $email);
 	}
 
@@ -154,7 +155,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObjectNull() {
 		$emailStr = null;
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$email = $dataMap->optValueObject('email',Email::class, nullAllowed: true);
+		$email = $dataMap->optValueObject('email',EmailMock::class, nullAllowed: true);
 		$this->assertNull($email);
 	}
 
@@ -165,7 +166,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = null;
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$dataMap->optValueObject('email',Email::class, nullAllowed: false);
+		$dataMap->optValueObject('email',EmailMock::class, nullAllowed: false);
 	}
 
 	/**
@@ -174,7 +175,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = '';
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$dataMap->optValueObject('email', Email::class);
+		$dataMap->optValueObject('email', EmailMock::class);
 	}
 
 	/**
@@ -183,7 +184,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = 'abcd';
 		$dataMap = new DataMap(['email' => $emailStr]);
-		$dataMap->optValueObject('email', Email::class);
+		$dataMap->optValueObject('email', EmailMock::class);
 	}
 
 	/**
@@ -193,9 +194,9 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObjectArray() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['emails' => ['email' => $emailStr, 'email2' => $emailStr]]);
-		$emails = $dataMap->reqValueObjectArray('emails',Email::class);
+		$emails = $dataMap->reqValueObjectArray('emails',EmailMock::class);
 		foreach ($emails as $email) {
-			$this->assertInstanceOf(Email::class, $email);
+			$this->assertInstanceOf(EmailMock::class, $email);
 			$this->assertEquals($emailStr, $email);
 		}
 	}
@@ -217,7 +218,7 @@ class DataMapValueObjectsTest extends TestCase {
 	 */
 	function testReqValueObjectArrayNull() {
 		$dataMap = new DataMap(['emails' => null]);
-		$emails = $dataMap->reqValueObjectArray('emails',Email::class, true);
+		$emails = $dataMap->reqValueObjectArray('emails',EmailMock::class, true);
 		$this->assertNull($emails);
 	}
 
@@ -227,7 +228,7 @@ class DataMapValueObjectsTest extends TestCase {
 	 */
 	function testReqValueObjectArrayFieldNull() {
 		$dataMap = new DataMap(['emails' => ['email' => null, 'email2' => null]]);
-		$emails = $dataMap->reqValueObjectArray('emails',Email::class, fieldNullAllowed: true);
+		$emails = $dataMap->reqValueObjectArray('emails',EmailMock::class, fieldNullAllowed: true);
 		foreach ($emails as $email) {
 			$this->assertNull($email);
 		}
@@ -240,7 +241,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObjectArrayNotNull() {
 		$this->expectException(InvalidAttributeException::class);
 		$dataMap = new DataMap(['emails' => null]);
-		$dataMap->reqValueObjectArray('emails',Email::class, false);
+		$dataMap->reqValueObjectArray('emails',EmailMock::class, false);
 	}
 
 	/**
@@ -250,7 +251,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObjectArrayFieldNotNull() {
 		$this->expectException(InvalidAttributeException::class);
 		$dataMap = new DataMap(['emails' => ['email' => null, 'email2' => null]]);
-		$dataMap->reqValueObjectArray('emails',Email::class, fieldNullAllowed: false);
+		$dataMap->reqValueObjectArray('emails',EmailMock::class, fieldNullAllowed: false);
 	}
 
 	/**
@@ -259,7 +260,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObjectArrayEmptyValue() {
 		$this->expectException(InvalidAttributeException::class);
 		$dataMap = new DataMap(['emails' => ['email' => '']]);
-		$dataMap->reqValueObjectArray('emails', Email::class);
+		$dataMap->reqValueObjectArray('emails', EmailMock::class);
 	}
 
 	/**
@@ -268,7 +269,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObjectArrayInvalidValue() {
 		$this->expectException(InvalidAttributeException::class);
 		$dataMap = new DataMap(['emails' => ['email' => 'abcd']]);
-		$dataMap->reqValueObjectArray('emails', Email::class);
+		$dataMap->reqValueObjectArray('emails', EmailMock::class);
 	}
 
 	/**
@@ -278,9 +279,9 @@ class DataMapValueObjectsTest extends TestCase {
 	function testReqValueObjectArrayInvalidValueKeyType() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['emails' => ['email' => $emailStr, 'email2' => $emailStr]]);
-		$emails = $dataMap->reqValueObjectArray('emails',Email::class, keyType: TypeConstraints::string());
+		$emails = $dataMap->reqValueObjectArray('emails',EmailMock::class, keyType: TypeConstraints::string());
 		foreach ($emails as $email) {
-			$this->assertInstanceOf(Email::class, $email);
+			$this->assertInstanceOf(EmailMock::class, $email);
 			$this->assertEquals($emailStr, $email);
 		}
 	}
@@ -292,7 +293,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['emails' => ['email' => $emailStr, 'email2' => $emailStr]]);
-		$dataMap->reqValueObjectArray('emails',Email::class, keyType: TypeConstraints::int());
+		$dataMap->reqValueObjectArray('emails',EmailMock::class, keyType: TypeConstraints::int());
 	}
 
 	/**
@@ -302,9 +303,9 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObjectArray() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['emails' => ['email' => $emailStr, 'email2' => $emailStr]]);
-		$emails = $dataMap->optValueObjectArray('emails',Email::class);
+		$emails = $dataMap->optValueObjectArray('emails',EmailMock::class);
 		foreach ($emails as $email) {
-			$this->assertInstanceOf(Email::class, $email);
+			$this->assertInstanceOf(EmailMock::class, $email);
 			$this->assertEquals($emailStr, $email);
 		}
 	}
@@ -324,7 +325,7 @@ class DataMapValueObjectsTest extends TestCase {
 	 */
 	function testOptValueObjectArrayNoKey() {
 		$dataMap = new DataMap();
-		$emails = $dataMap->optValueObjectArray('emails',Email::class);
+		$emails = $dataMap->optValueObjectArray('emails',EmailMock::class);
 		$this->assertEmpty($emails);
 	}
 
@@ -335,9 +336,9 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObjectArrayDefaultValue() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap();
-		$emails = $dataMap->optValueObjectArray('emails',Email::class, defaultValue: [new Email($emailStr)]);
+		$emails = $dataMap->optValueObjectArray('emails',EmailMock::class, defaultValue: [new EmailMock($emailStr)]);
 		foreach ($emails as $email) {
-			$this->assertInstanceOf(Email::class, $email);
+			$this->assertInstanceOf(EmailMock::class, $email);
 			$this->assertEquals($emailStr, $email);
 		}
 	}
@@ -347,7 +348,7 @@ class DataMapValueObjectsTest extends TestCase {
 	 */
 	function testOptValueObjectArrayNull() {
 		$dataMap = new DataMap(['emails' => null]);
-		$emails = $dataMap->optValueObjectArray('emails',Email::class, nullAllowed: true);
+		$emails = $dataMap->optValueObjectArray('emails',EmailMock::class, nullAllowed: true);
 		$this->assertNull($emails);
 	}
 
@@ -356,7 +357,7 @@ class DataMapValueObjectsTest extends TestCase {
 	 */
 	function testOptValueObjectArrayFieldNull() {
 		$dataMap = new DataMap(['emails' => ['email' => null]]);
-		$emails = $dataMap->optValueObjectArray('emails',Email::class, fieldNullAllowed: true);
+		$emails = $dataMap->optValueObjectArray('emails',EmailMock::class, fieldNullAllowed: true);
 		foreach ($emails as $email) {
 			$this->assertNull($email);
 		}
@@ -369,7 +370,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 
 		$dataMap = new DataMap(['emails' => null]);
-		$dataMap->optValueObjectArray('emails',Email::class, nullAllowed: false);
+		$dataMap->optValueObjectArray('emails',EmailMock::class, nullAllowed: false);
 	}
 	/**
 	 * @throws InvalidAttributeException
@@ -378,7 +379,7 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 
 		$dataMap = new DataMap(['emails' => ['email' => null]]);
-		$dataMap->optValueObjectArray('emails',Email::class, fieldNullAllowed: false);
+		$dataMap->optValueObjectArray('emails',EmailMock::class, fieldNullAllowed: false);
 	}
 
 	/**
@@ -386,7 +387,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObjectArrayEmptyValue() {
 		$this->expectException(InvalidAttributeException::class);
 		$dataMap = new DataMap(['emails' => ['email' => '']]);
-		$dataMap->optValueObjectArray('emails', Email::class);
+		$dataMap->optValueObjectArray('emails', EmailMock::class);
 	}
 
 	/**
@@ -394,7 +395,7 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObjectArrayInvalidValue() {
 		$this->expectException(InvalidAttributeException::class);
 		$dataMap = new DataMap(['emails' => ['email' => 'abcd']]);
-		$dataMap->optValueObjectArray('emails', Email::class);
+		$dataMap->optValueObjectArray('emails', EmailMock::class);
 	}
 
 	/**
@@ -403,9 +404,9 @@ class DataMapValueObjectsTest extends TestCase {
 	function testOptValueObjectArrayInvalidValueKeyType() {
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['emails' => ['email' => $emailStr, 'email2' => $emailStr]]);
-		$emails = $dataMap->optValueObjectArray('emails',Email::class, keyType: TypeConstraints::string());
+		$emails = $dataMap->optValueObjectArray('emails',EmailMock::class, keyType: TypeConstraints::string());
 		foreach ($emails as $email) {
-			$this->assertInstanceOf(Email::class, $email);
+			$this->assertInstanceOf(EmailMock::class, $email);
 			$this->assertEquals($emailStr, $email);
 		}
 	}
@@ -416,6 +417,6 @@ class DataMapValueObjectsTest extends TestCase {
 		$this->expectException(InvalidAttributeException::class);
 		$emailStr = 'hole@radio.ch';
 		$dataMap = new DataMap(['emails' => ['email' => $emailStr, 'email2' => $emailStr]]);
-		$dataMap->optValueObjectArray('emails',Email::class, keyType: TypeConstraints::int());
+		$dataMap->optValueObjectArray('emails',EmailMock::class, keyType: TypeConstraints::int());
 	}
 }

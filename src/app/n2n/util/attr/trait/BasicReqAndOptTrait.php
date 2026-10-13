@@ -9,7 +9,6 @@ use n2n\util\type\TypeConstraints;
 use Stringable;
 use n2n\util\attr\MissingAttributeFieldException;
 use n2n\util\attr\InvalidAttributeException;
-use n2n\util\type\TypeName;
 
 /**
  */
@@ -228,44 +227,6 @@ trait BasicReqAndOptTrait {
 
 	/**
 	 * @throws InvalidAttributeException
-	 */
-	private function checkValueObjectTypeName(string|\ReflectionClass $typeName): void {
-		if (TypeName::isValueObject($typeName)) {
-			return;
-		}
-
-		throw new InvalidAttributeException($typeName . ' is not a valid value object type');
-	}
-
-	/**
-	 * @param mixed $path must be compatible with {@link AttributePath::create()}.
-	 * @param string|\ReflectionClass $typeName
-	 * @param bool $nullAllowed
-	 * @return mixed
-	 * @throws InvalidAttributeException|MissingAttributeFieldException
-	 */
-	public function reqValueObject(mixed $path, string|\ReflectionClass $typeName, bool $nullAllowed = false): mixed {
-		$this->checkValueObjectTypeName($typeName);
-
-		return $this->req($path, TypeConstraints::namedType($typeName, $nullAllowed, true));
-	}
-
-	/**
-	 * @param mixed $path must be compatible with {@link AttributePath::create()}.
-	 * @param string|\ReflectionClass $typeName
-	 * @param mixed $defaultValue
-	 * @param bool $nullAllowed
-	 * @return mixed
-	 * @throws InvalidAttributeException
-	 */
-	public function optValueObject(mixed $path, string|\ReflectionClass $typeName, mixed $defaultValue = null, bool $nullAllowed = true): mixed {
-		$this->checkValueObjectTypeName($typeName);
-
-		return $this->opt($path, TypeConstraints::namedType($typeName, $nullAllowed, true), $defaultValue);
-	}
-
-	/**
-	 * @throws InvalidAttributeException
 	 * @throws MissingAttributeFieldException
 	 */
 	public function reqArray($path, $fieldType = null, bool $nullAllowed = false, $keyType = null): ?array {
@@ -294,25 +255,4 @@ trait BasicReqAndOptTrait {
 		return $this->optArray($path, TypeConstraint::createSimple('scalar', $fieldNullAllowed), $defaultValue, $nullAllowed);
 	}
 
-	/**
-	 * @throws InvalidAttributeException|MissingAttributeFieldException
-	 */
-	public function reqValueObjectArray($name, $typeName, bool $nullAllowed = false, bool $fieldNullAllowed = false,
-			$keyType = null): ?array {
-		$this->checkValueObjectTypeName($typeName);
-
-		return $this->reqArray($name, TypeConstraints::namedType($typeName, $fieldNullAllowed, true),
-				$nullAllowed, $keyType);
-	}
-
-	/**
-	 * @throws InvalidAttributeException
-	 */
-	public function optValueObjectArray($name, $typeName, $defaultValue = [],
-			bool $nullAllowed = false, bool $fieldNullAllowed = false, $keyType = null): ?array {
-		$this->checkValueObjectTypeName($typeName);
-
-		return $this->optArray($name, TypeConstraints::namedType($typeName, $fieldNullAllowed, true),
-				$defaultValue, $nullAllowed, $keyType);
-	}
 }

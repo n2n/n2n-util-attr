@@ -1,11 +1,11 @@
 <?php
-namespace n2n\util\attr;
+namespace n2n\util\attr\mock;
 
 use n2n\spec\valobj\err\IllegalValueException;
 use n2n\util\ex\ExUtils;
 use n2n\spec\valobj\scalar\StringValueObject;
 
-final class Email implements StringValueObject, \Stringable, \JsonSerializable {
+final class EmailMock implements StringValueObject, \Stringable, \JsonSerializable {
 
 	public function __construct(private string $value) {
 		IllegalValueException::assertTrue(
@@ -38,14 +38,14 @@ final class Email implements StringValueObject, \Stringable, \JsonSerializable {
 		return $this->value;
 	}
 
-	static function from(string|\Stringable|null $value, bool $lenient = false): ?Email {
+	static function from(string|\Stringable|null $value, bool $lenient = false): ?EmailMock {
 		return ExUtils::try(fn () => self::checkedFrom($value, $lenient));
 	}
 
 	/**
 	 * @throws IllegalValueException
 	 */
-	static function checkedFrom(string|\Stringable|null $value, bool $lenient = false): ?Email {
+	static function checkedFrom(string|\Stringable|null $value, bool $lenient = false): ?EmailMock {
 		if ($value === null) {
 			return null;
 		}
@@ -58,6 +58,6 @@ final class Email implements StringValueObject, \Stringable, \JsonSerializable {
 			return null;
 		}
 
-		return new Email($value);
+		return new EmailMock($value);
 	}
 }

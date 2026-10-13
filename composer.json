@@ -26,7 +26,7 @@
 		"vendor-dir" : "src/vendor"
 	},
 	"require" : {
-      "n2n/n2n-util": "~7.5.0",
+      "n2n/n2n-util": "dev-dev/david/convert as 7.5.0",
       "n2n/n2n-spec-valobj": "~1.0.0"
     },
 	"require-dev" : {
