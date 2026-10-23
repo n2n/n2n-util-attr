@@ -30,6 +30,7 @@ use n2n\util\ex\NotYetImplementedException;
 use n2n\util\attr\trait\RetrieveTrait;
 use n2n\util\attr\trait\BasicReqAndOptTrait;
 use n2n\util\attr\trait\ValueObjReqAndOptTrait;
+use n2n\util\ex\ExUtils;
 
 class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	use RetrieveTrait;
@@ -207,12 +208,10 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	/**
 	 * @param string|AttributePath $path
 	 * @return bool
-	 * @throws InvalidAttributeException
-	 * @throws MissingAttributeFieldException
 	 */
 	function has($path): bool {
 		$found = false;
-		$this->retrieve($path, null, false, null, $found);
+		ExUtils::try(fn () => $this->retrieve($path, null, false, null, $found));
 		return $found;
 	}
 
