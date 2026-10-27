@@ -31,6 +31,7 @@ use n2n\util\attr\trait\RetrieveTrait;
 use n2n\util\attr\trait\BasicReqAndOptTrait;
 use n2n\util\attr\trait\ValueObjReqAndOptTrait;
 use n2n\util\ex\ExUtils;
+use n2n\util\ex\IllegalStateException;
 
 class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	use RetrieveTrait;
@@ -211,7 +212,11 @@ class DataMap implements AttributeReader, AttributeWriter, \JsonSerializable {
 	 */
 	function has($path): bool {
 		$found = false;
-		ExUtils::try(fn () => $this->retrieve($path, null, false, null, $found));
+		try {
+			$this->retrieve($path, null, false, null, $found);
+		} catch (AttributesException $e) {
+			throw new IllegalStateException('Should not happen: ' . $e->getMessage(), previous: $e);
+		}
 		return $found;
 	}
 
